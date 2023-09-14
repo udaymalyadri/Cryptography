@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdint.h>
+
+
+uint32_t P[18];
+uint32_t S[4][256];
+
+
+void blowfish_key_setup(uint8_t key[], int key_len) {
+    
+    
+    for (int i = 0; i < 18; i++) {
+        P[i] = 0x12345678;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 256; j++) {
+            S[i][j] = 0x11223344;
+        }
+    }
+}
+
+
+void blowfish_encrypt(uint32_t* left, uint32_t* right) {
+    
+}
+
+
+void blowfish_decrypt(uint32_t* left, uint32_t* right) {
+    
+    
+}
+
+int main() {
+    uint8_t key[] = "MySecretKey";
+    int key_len = sizeof(key) - 1; 
+
+    
+    uint32_t left = 0x12345678;
+    uint32_t right = 0x87654321;
+
+    
+    blowfish_key_setup(key, key_len);
+
+    
+    blowfish_encrypt(&left, &right);
+
+    printf("Encrypted: %08X %08X\n", left, right);
+
+  
+    blowfish_decrypt(&left, &right);
+
+    printf("Decrypted: %08X %08X\n", left, right);
+
+    return 0;
+}
