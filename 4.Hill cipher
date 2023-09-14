@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define MAX_TEXT_LENGTH 100
+#define ALPHABET_SIZE 26
+
+int calcDeterminant(int matrix[2][2]) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+}
+
+int multiplicativeInverse(int num, int m) {
+    num = num % m;
+    for (int i = 1; i < m; i++) {
+        if ((num * i) % m == 1) {
+            return i;
+        }
+    }
+    return 1;
+}
+
+
+void encrypt(int keyMatrix[2][2], char *plaintext, char *ciphertext) {
+    int len = strlen(plaintext);
+    int encryptedPairs[len][2];
+    
+    for (int i = 0; i < len; i += 2) {
+        encryptedPairs[i][0] = (plaintext[i] - 'a');
+        encryptedPairs[i][1] = (i + 1 < len) ? (plaintext[i + 1] - 'a') : 0;
+        
+        for (int j = 0; j < 2; j++) {
+            ciphertext[i + j] = ((keyMatrix[j][0] * encryptedPairs[i][0] +
+                                  keyMatrix[j][1] * encryptedPairs[i][1]) % ALPHABET_SIZE) + 'a';
+        }
+    }
+    ciphertext[len] = '\0';
+}
+
+int main() {
+    int keyMatrix[2][2];
+    char plaintext[MAX_TEXT_LENGTH];
+    char ciphertext[MAX_TEXT_LENGTH];
+
+    printf("Enter a 2x2 key matrix:\n");
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            scanf("%d", &keyMatrix[i][j]);
+        }
+    }
+
+    getchar(); 
+
+    printf("Enter the plaintext (without spaces, all lowercase): ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0'; 
+
+    int determinant = calcDeterminant(keyMatrix);
+    int inverseDeterminant = multiplicativeInverse(determinant, ALPHABET_SIZE);
+
+    if (determinant == 0 || inverseDeterminant == 1) {
+        printf("Invalid key matrix. Determinant must be non-zero and the inverse mod 26 must exist.\n");
+        return 1;
+    }
+
+    
+    int adjugate[2][2] = {
+        {keyMatrix[1][1], -keyMatrix[0][1]},
+        {-keyMatrix[1][0], keyMatrix[0][0]}
+    };
+
+    
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            keyMatrix[i][j] = (adjugate[i][j] * inverseDeterminant) % ALPHABET_SIZE;
+            if (keyMatrix[i][j] < 0) {
+                keyMatrix[i][j] += ALPHABET_SIZE;
+            }
+        }
+    }
+
+    encrypt(keyMatrix, plaintext, ciphertext);
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
