@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+// Function to calculate the greatest common divisor (GCD) of two numbers
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+
+// Function to calculate the modular inverse using the Extended Euclidean Algorithm
+int modInverse(int a, int m) {
+    int m0 = m;
+    int x0 = 0;
+    int x1 = 1;
+
+    while (a > 1) {
+        int q = a / m;
+        int t = m;
+
+        m = a % m;
+        a = t;
+
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+
+    if (x1 < 0)
+        x1 += m0;
+
+    return x1;
+}
+
+// Function to generate RSA keys
+void generateKeys(int *n, int *e, int *d) {
+    // Choose two prime numbers (p and q)
+    int p = 61;
+    int q = 53;
+
+    *n = p * q;
+    int phi = (p - 1) * (q - 1);
+
+    // Choose e (public key) such that 1 < e < phi and gcd(e, phi) = 1
+    *e = 17;
+
+    // Calculate d (private key) using the modular inverse
+    *d = modInverse(*e, phi);
+}
+
+// Function to perform RSA encryption
+int encrypt(int plaintext, int e, int n) {
+    int ciphertext = 1;
+    for (int i = 0; i < e; i++) {
+        ciphertext = (ciphertext * plaintext) % n;
+    }
+    return ciphertext;
+}
+
+// Function to perform RSA decryption
+int decrypt(int ciphertext, int d, int n) {
+    int plaintext = 1;
+    for (int i = 0; i < d; i++) {
+        plaintext = (plaintext * ciphertext) % n;
+    }
+    return plaintext;
+}
+
+int main() {
+    int n, e, d;
+
+    generateKeys(&n, &e, &d);
+
+    int plaintext = 42; // Message to be encrypted
+    printf("Original plaintext: %d\n", plaintext);
+
+    int ciphertext = encrypt(plaintext, e, n);
+    printf("Encrypted ciphertext: %d\n", ciphertext);
+
+    int decrypted_text = decrypt(ciphertext, d, n);
+    printf("Decrypted plaintext: %d\n", decrypted_text);
+
+    return 0;
+}
