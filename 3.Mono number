@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+
+void monoalphabeticSubstitution(char *input, char *key) {
+    int length = strlen(input);
+
+    for (int i = 0; i < length; i++) {
+        if (isdigit(input[i])) {
+            int num = input[i] - '0';
+            if (num >= 0 && num <= 9) {
+                input[i] = key[num];
+            }
+        }
+    }
+}
+
+int main() {
+    char input[100];
+    char key[] = "XZCDBKJFGE"; 
+    printf("Enter a string with numbers: ");
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = '\0'; 
+    monoalphabeticSubstitution(input, key);
+
+    printf("Substituted string: %s\n", input);
+
+    return 0;
+}
