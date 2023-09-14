@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+long long mod_exp(long long base, long long exponent, long long modulus) {
+    long long result = 1;
+    base = base % modulus;
+    
+    while (exponent > 0) {
+        if (exponent % 2 == 1) {
+            result = (result * base) % modulus;
+        }
+        exponent = exponent >> 1;
+        base = (base * base) % modulus;
+    }
+    
+    return result;
+}
+
+int main() {
+    
+    long long p = 23;      
+    long long q = 11;       
+    long long alpha = 6;      
+    long long private_key = 3; 
+    
+    
+    long long beta = mod_exp(alpha, private_key, p);
+    
+    
+    long long message = 15;
+    
+
+    long long k = 7;
+    
+    
+    long long r = mod_exp(alpha, k, p) % q;
+    
+    
+    long long k_inverse = 8; 
+    long long s = (k_inverse * (message + private_key * r)) % q;
+    
+    printf("Public key (beta): %lld\n", beta);
+    printf("Signature (r, s): (%lld, %lld)\n", r, s);
+    
+    return 0;
+}
